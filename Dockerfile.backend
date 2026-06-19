@@ -2,7 +2,7 @@ FROM python:3.12-slim
 
 WORKDIR /app
 
-# Минимальные системные зависимости для Pillow и работы с изображениями
+# Системные зависимости (для headless opencv libgl1/libglib2.0-0 достаточно)
 RUN apt-get update -o Acquire::Retries=3 && \
     apt-get install -y --no-install-recommends \
         libgl1 \
@@ -12,7 +12,14 @@ RUN apt-get update -o Acquire::Retries=3 && \
     && rm -rf /var/lib/apt/lists/*
 
 COPY requirements-backend.txt .
-RUN pip install --no-cache-dir -r requirements-backend.txt --extra-index-url https://download.pytorch.org/whl/cpu
+
+# 1. Устанавливаем все зависимости (ultralytics подтянет полный opencv-python)
+RUN pip install --no-cache-dir -r requirements-backend.txt \
+    --extra-index-url https://download.pytorch.org/whl/cpu
+
+# 2. Принудительно удаляем полный opencv и ставим headless
+RUN pip uninstall -y opencv-python opencv-python-headless && \
+    pip install --no-cache-dir opencv-python-headless==4.10.0.84
 
 COPY app/ ./app/
 COPY models/ ./models/
