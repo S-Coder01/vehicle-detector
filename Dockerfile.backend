@@ -2,7 +2,7 @@ FROM python:3.12-slim
 
 WORKDIR /app
 
-# Установка системных зависимостей для OpenCV и других библиотек
+# Установка всех необходимых библиотек для OpenCV (headless)
 RUN apt-get update -o Acquire::Retries=3 && \
     apt-get install -y --no-install-recommends \
         libgl1 \
@@ -16,6 +16,16 @@ RUN apt-get update -o Acquire::Retries=3 && \
         libxext6 \
         libsm6 \
         libice6 \
+        libxcb-icccm4 \
+        libxcb-image0 \
+        libxcb-keysyms1 \
+        libxcb-randr0 \
+        libxcb-render-util0 \
+        libxcb-xinerama0 \
+        libxcb-xkb1 \
+        libx11-xcb1 \
+        libxcb-util1 \
+        libxcb-util0-dev \
         netcat-openbsd \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
@@ -23,7 +33,7 @@ RUN apt-get update -o Acquire::Retries=3 && \
 COPY requirements-backend.txt .
 RUN pip install --no-cache-dir -r requirements-backend.txt --extra-index-url https://download.pytorch.org/whl/cpu
 
-# Копируем только нужные папки и файлы
+# Копируем код и модели
 COPY app/ ./app/
 COPY models/ ./models/
 COPY migrations/ ./migrations/
