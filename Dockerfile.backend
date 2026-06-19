@@ -2,30 +2,11 @@ FROM python:3.12-slim
 
 WORKDIR /app
 
-# Установка всех необходимых библиотек для OpenCV (headless)
+# Минимальные системные зависимости для Pillow и работы с изображениями
 RUN apt-get update -o Acquire::Retries=3 && \
     apt-get install -y --no-install-recommends \
         libgl1 \
         libglib2.0-0 \
-        libxcb-shm0 \
-        libxcb-xfixes0 \
-        libxcb-shape0 \
-        libxcb \
-        libx11-6 \
-        libxrender1 \
-        libxext6 \
-        libsm6 \
-        libice6 \
-        libxcb-icccm4 \
-        libxcb-image0 \
-        libxcb-keysyms1 \
-        libxcb-randr0 \
-        libxcb-render-util0 \
-        libxcb-xinerama0 \
-        libxcb-xkb1 \
-        libx11-xcb1 \
-        libxcb-util1 \
-        libxcb-util0-dev \
         netcat-openbsd \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
@@ -33,7 +14,6 @@ RUN apt-get update -o Acquire::Retries=3 && \
 COPY requirements-backend.txt .
 RUN pip install --no-cache-dir -r requirements-backend.txt --extra-index-url https://download.pytorch.org/whl/cpu
 
-# Копируем код и модели
 COPY app/ ./app/
 COPY models/ ./models/
 COPY migrations/ ./migrations/
